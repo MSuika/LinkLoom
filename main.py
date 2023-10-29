@@ -21,7 +21,14 @@ def calculate_cost_from_uploaded_file(uploaded_file):
     COST_PER_QUERY = 0.004740499
     FREE_KEYWORDS_LIMIT = 5
     
-    df = pd.read_csv(uploaded_file)
+    if uploaded_file:
+        file_extension = uploaded_file.name.split('.')[-1]
+        if file_extension == "csv":
+            df = pd.read_csv(uploaded_file)
+        elif file_extension == "xlsx":
+            df = pd.read_excel(uploaded_file)
+
+
     
     keywords = df['keyword'].str.split(',').explode().str.strip()
     
@@ -37,7 +44,13 @@ def calculate_cost_from_uploaded_file(uploaded_file):
 def process_uploaded_file(uploaded_file):
     link = None
     uploaded_file.seek(0)
-    df = pd.read_csv(uploaded_file)
+    if uploaded_file:
+        file_extension = uploaded_file.name.split('.')[-1]
+        if file_extension == "csv":
+            df = pd.read_csv(uploaded_file)
+        elif file_extension == "xlsx":
+            df = pd.read_excel(uploaded_file)
+
     first_row = df.iloc[0]
     domain = urlparse(first_row['target_page']).netloc
 
@@ -158,7 +171,7 @@ def main():
     st.write("Easy way to find **internal linking opportunites** for any website.")
     with st.expander("More about the app"):
         st.write("LinkLoom is a powerful internal linking tool designed for SEO specialists and webmasters. It streamlines the process of identifying internal linking opportunities by allowing users to upload a CSV file with specified keywords and target pages. Utilizing the Google Custom Search API, LinkLoom searches for these keywords across predefined websites, extracts relevant content, and compiles a list of potential internal linking opportunities. The results can be conveniently downloaded in CSV or XLSX format for further analysis or implementation.")
-    uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
+    uploaded_file = uploaded_file = st.file_uploader("Upload CSV or XLSX", type=["csv", "xlsx"])
 
     if uploaded_file:
         total_keywords, total_cost = calculate_cost_from_uploaded_file(uploaded_file)
